@@ -1,14 +1,10 @@
 ﻿using ChromeDriverUpdater.Models;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChromeDriverUpdater
 {
@@ -31,7 +27,7 @@ namespace ChromeDriverUpdater
             return ExitCode.Success;
         }
 
-        private  bool CompareVersionMajorToBuild(Version v1, Version v2)
+        private bool CompareVersionMajorToBuild(Version v1, Version v2)
         {
             if (v1.Major == v2.Major &&
                 v1.Minor == v2.Minor &&
@@ -86,11 +82,18 @@ namespace ChromeDriverUpdater
         {
             var processes = Process.GetProcesses();
 
-            foreach(Process process in processes)
+            foreach (Process process in processes)
             {
-                if(process.MainModule.FileName == chromeDriverPath)
+                try
                 {
-                    process.Kill();
+                    if (process.MainModule.FileName == chromeDriverPath)
+                    {
+                        process.Kill();
+                    }
+                }
+                catch
+                {
+
                 }
             }
         }
@@ -104,7 +107,7 @@ namespace ChromeDriverUpdater
             File.Copy(driverPath, chromeDriverPath, true);
         }
 
-        public string GetProperChromeDriverVersion(Version chromeVersion)
+        private string GetProperChromeDriverVersion(Version chromeVersion)
         {
             string url = $"{CHROME_DRIVER_BASE_URL}/LATEST_RELEASE_{chromeVersion.Major}.{chromeVersion.Minor}.{chromeVersion.Build}";
 
@@ -115,19 +118,19 @@ namespace ChromeDriverUpdater
                 string result = client.DownloadString(url);
 
                 return result;
-            } 
+            }
             catch
             {
                 throw new UpdateFailException("Cannot get proper chromedriver version", ExitCode.Fail);
             }
         }
 
-        public string DownloadChromeDriver(string version)
+        private string DownloadChromeDriver(string version)
         {
             string fileName = "chromedriver_win32.zip";
             string url = $"{CHROME_DRIVER_BASE_URL}/{version}/{fileName}";
 
-            string downloadPath= Path.Combine(Path.GetTempPath(), fileName);
+            string downloadPath = Path.Combine(Path.GetTempPath(), fileName);
             string unzipPath = Path.Combine(Path.GetTempPath(), "chromedriver_win32");
 
             try
@@ -155,7 +158,7 @@ namespace ChromeDriverUpdater
 
             foreach (FileInfo file in files)
             {
-                if(file.Name == "chromedriver.exe")
+                if (file.Name == "chromedriver.exe")
                 {
                     return file.FullName;
                 }
@@ -164,7 +167,7 @@ namespace ChromeDriverUpdater
             throw new UpdateFailException("Cannot Get New ChromeDriver From unzip Path", ExitCode.CannotDownloadNewChromeDriver);
         }
 
-        public void UnzipFile(string zipPath, string unzipPath)
+        private void UnzipFile(string zipPath, string unzipPath)
         {
             try
             {
