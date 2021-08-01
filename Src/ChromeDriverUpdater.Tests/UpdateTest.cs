@@ -15,7 +15,6 @@ namespace ChromeDriverUpdater.Tests
 
             Updater updater = new Updater();
             updater.Update("chromedriver.exe");
-
         }
     }
 }
