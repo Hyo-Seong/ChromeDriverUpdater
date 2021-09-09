@@ -10,7 +10,8 @@ namespace ChromeDriverUpdater.Models
     {
         Success = 1,
         Fail = -1,
-        CannotGetLatestRelase = -2,
-        ChromeNotInstalled = -3
+        CannotDownloadNewChromeDriver = -2,
+        CannotGetLatestRelase = -3,
+        ChromeNotInstalled = -4
     }
 }
