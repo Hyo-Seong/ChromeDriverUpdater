@@ -62,12 +62,10 @@
   <ItemGroup>
     <Compile Include="Models\ExitCode.cs" />
     <Compile Include="ProcessExecuter.cs" />
-    <Compile Include="UpdateFailException.cs" />
+    <Compile Include="Exception\UpdateFailException.cs" />
     <Compile Include="Updater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exception\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
