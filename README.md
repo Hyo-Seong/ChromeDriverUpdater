@@ -4,7 +4,7 @@
 
 [NuGet Package](https://www.nuget.org/packages/ChromeDriverUpdater)
 
-##Usage
+## Usage
 
 ```csharp
 try
