@@ -12,10 +12,11 @@ namespace ChromeDriverUpdater
     {
         private const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
 
-        public ExitCode Update(string chromeDriverPath)
+        /// <exception cref="UpdateFailException"></exception>
+        public void Update(string chromeDriverPath)
         {
             Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverPath);
-            Version chromeVersion = GetChromeVersion();
+            Version chromeVersion = GetChromeVersionFromRegistry();
 
             if (!CompareVersionMajorToBuild(chromeVersion, chromeDriverVersion))
             {
@@ -27,16 +28,9 @@ namespace ChromeDriverUpdater
 
         private bool CompareVersionMajorToBuild(Version v1, Version v2)
         {
-            if (v1.Major == v2.Major &&
-                v1.Minor == v2.Minor &&
-                v1.Build == v2.Build)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (v1.Major == v2.Major &&
+                    v1.Minor == v2.Minor &&
+                    v1.Build == v2.Build);
         }
 
         private Version GetChromeDriverVersion(string chromeDriverPath)
@@ -50,7 +44,7 @@ namespace ChromeDriverUpdater
             return version;
         }
 
-        private Version GetChromeVersion()
+        private Version GetChromeVersionFromRegistry()
         {
             try
             {
@@ -58,22 +52,23 @@ namespace ChromeDriverUpdater
                 {
                     if (key != null)
                     {
-                        Object o = key.GetValue("version");
-                        if (o != null)
+                        Object versionObject = key.GetValue("version");
+
+                        if (versionObject != null)
                         {
-                            Version version = new Version(o as String);
+                            Version version = new Version(versionObject as String);
 
                             return version;
                         }
                     }
+
+                    throw new Exception();
                 }
             }
             catch
             {
                 throw new UpdateFailException("Chrome Is Not Installed.", ErrorCode.ChromeNotInstalled);
             }
-
-            return null;
         }
 
         private void ShutdownChromeDriver(string chromeDriverPath)
