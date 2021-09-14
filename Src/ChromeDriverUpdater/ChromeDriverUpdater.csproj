@@ -60,7 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\ExitCode.cs" />
+    <Compile Include="Models\ErrorCode.cs" />
     <Compile Include="ProcessExecuter.cs" />
     <Compile Include="Exception\UpdateFailException.cs" />
     <Compile Include="Updater.cs" />

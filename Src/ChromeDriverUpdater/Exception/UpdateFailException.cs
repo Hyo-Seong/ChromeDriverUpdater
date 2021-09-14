@@ -9,22 +9,22 @@ namespace ChromeDriverUpdater
 {
     public class UpdateFailException : Exception
     {
-        public ExitCode ExitCode { get; set; }
+        public ErrorCode ErrorCode { get; set; }
 
         public UpdateFailException()
         {
         }
 
-        public UpdateFailException(string message, ExitCode exitCode)
+        public UpdateFailException(string message, ErrorCode errorCode)
             : base(message)
         {
-            ExitCode = exitCode;
+            ErrorCode = errorCode;
         }
 
-        public UpdateFailException(string message, ExitCode exitCode, Exception inner)
+        public UpdateFailException(string message, ErrorCode errorCode, Exception inner)
             : base(message, inner)
         {
-            ExitCode = exitCode;
+            ErrorCode = errorCode;
         }
     }
 }

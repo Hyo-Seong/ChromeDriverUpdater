@@ -23,8 +23,6 @@ namespace ChromeDriverUpdater
 
                 UpdateChromeDriver(chromeDriverPath, chromeVersion);
             }
-
-            return ExitCode.Success;
         }
 
         private bool CompareVersionMajorToBuild(Version v1, Version v2)
@@ -72,7 +70,7 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Chrome Is Not Installed.", ExitCode.ChromeNotInstalled);
+                throw new UpdateFailException("Chrome Is Not Installed.", ErrorCode.ChromeNotInstalled);
             }
 
             return null;
@@ -121,7 +119,7 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Cannot get proper chromedriver version", ExitCode.Fail);
+                throw new UpdateFailException("Cannot get proper chromedriver version", ErrorCode.Fail);
             }
         }
 
@@ -139,7 +137,7 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Cannot download file", ExitCode.CannotDownloadNewChromeDriver);
+                throw new UpdateFailException("Cannot download file", ErrorCode.CannotDownloadNewChromeDriver);
             }
 
             UnzipFile(downloadPath, unzipPath);
@@ -164,7 +162,7 @@ namespace ChromeDriverUpdater
                 }
             }
 
-            throw new UpdateFailException("Cannot Get New ChromeDriver From unzip Path", ExitCode.CannotDownloadNewChromeDriver);
+            throw new UpdateFailException("Cannot Get New ChromeDriver From unzip Path", ErrorCode.CannotDownloadNewChromeDriver);
         }
 
         private void UnzipFile(string zipPath, string unzipPath)
@@ -180,7 +178,7 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Cannot unzip file", ExitCode.Fail);
+                throw new UpdateFailException("Cannot unzip file", ErrorCode.Fail);
             }
         }
 
