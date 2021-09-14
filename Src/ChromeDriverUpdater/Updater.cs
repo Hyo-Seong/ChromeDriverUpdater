@@ -11,6 +11,7 @@ namespace ChromeDriverUpdater
     public class Updater
     {
         private const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
+        private const string FILE_NAME = "chromedriver_win32.zip";
 
         /// <exception cref="UpdateFailException"></exception>
         public void Update(string chromeDriverPath)
@@ -91,26 +92,26 @@ namespace ChromeDriverUpdater
             }
         }
 
-        private void UpdateChromeDriver(string chromeDriverPath, Version chromeDriverVersion)
+        private void UpdateChromeDriver(string existChromeDriverPath, Version chromeDriverVersion)
         {
             string version = GetProperChromeDriverVersion(chromeDriverVersion);
 
-            string driverPath = DownloadChromeDriver(version);
+            string zipFileDownloadPath = DownloadChromeDriverZipFile(version);
 
-            File.Copy(driverPath, chromeDriverPath, true);
+            string newChromeDriverPath = GetNewChromeDriverFromZipFile(zipFileDownloadPath);
+
+            File.Copy(newChromeDriverPath, existChromeDriverPath, true);
         }
 
         private string GetProperChromeDriverVersion(Version chromeVersion)
         {
-            string url = $"{CHROME_DRIVER_BASE_URL}/LATEST_RELEASE_{chromeVersion.Major}.{chromeVersion.Minor}.{chromeVersion.Build}";
-
             try
             {
+                string url = $"{CHROME_DRIVER_BASE_URL}/LATEST_RELEASE_{chromeVersion.Major}.{chromeVersion.Minor}.{chromeVersion.Build}";
+
                 WebClient client = new WebClient();
 
-                string result = client.DownloadString(url);
-
-                return result;
+                return client.DownloadString(url);
             }
             catch
             {
@@ -118,36 +119,27 @@ namespace ChromeDriverUpdater
             }
         }
 
-        private string DownloadChromeDriver(string version)
+        private string DownloadChromeDriverZipFile(string version)
         {
-            string fileName = "chromedriver_win32.zip";
-            string url = $"{CHROME_DRIVER_BASE_URL}/{version}/{fileName}";
+            string url = $"{CHROME_DRIVER_BASE_URL}/{version}/{FILE_NAME}";
+            string downloadPath = Path.Combine(Path.GetTempPath(), FILE_NAME);
 
-            string downloadPath = Path.Combine(Path.GetTempPath(), fileName);
+            DownloadFile(url, downloadPath);
+
+            return downloadPath;
+        }
+
+        private string GetNewChromeDriverFromZipFile(string zipFileDownloadPath)
+        {
             string unzipPath = Path.Combine(Path.GetTempPath(), "chromedriver_win32");
 
-            try
-            {
-                new WebClient().DownloadFile(url, downloadPath);
-            }
-            catch
-            {
-                throw new UpdateFailException("Cannot download file", ErrorCode.CannotDownloadNewChromeDriver);
-            }
+            UnzipFile(zipFileDownloadPath, unzipPath);
 
-            UnzipFile(downloadPath, unzipPath);
-
-            // delete zip file
-            File.Delete(downloadPath);
+            File.Delete(zipFileDownloadPath);
 
             DirectoryInfo directoryInfo = new DirectoryInfo(unzipPath);
 
-            var files = directoryInfo.GetFiles();
-
-            if (files.Length == 1)
-            {
-                return files[0].FullName;
-            }
+            FileInfo[] files = directoryInfo.GetFiles();
 
             foreach (FileInfo file in files)
             {
@@ -158,6 +150,18 @@ namespace ChromeDriverUpdater
             }
 
             throw new UpdateFailException("Cannot Get New ChromeDriver From unzip Path", ErrorCode.CannotDownloadNewChromeDriver);
+        }
+
+        private void DownloadFile(string url, string downloadPath)
+        {
+            try
+            {
+                new WebClient().DownloadFile(url, downloadPath);
+            }
+            catch
+            {
+                throw new UpdateFailException("Cannot download file", ErrorCode.CannotDownloadNewChromeDriver);
+            }
         }
 
         private void UnzipFile(string zipPath, string unzipPath)
