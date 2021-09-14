@@ -9,7 +9,7 @@
 ```csharp
 try
 {
-    Updater.Update("c:\path\to\chromedriver.exe");
+    Updater.Update(@"c:\path\to\chromedriver.exe");
 }
 catch (UpdateFailException exc)
 {
