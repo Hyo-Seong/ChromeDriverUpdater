@@ -16,6 +16,11 @@ namespace ChromeDriverUpdater
         /// <exception cref="UpdateFailException"></exception>
         public void Update(string chromeDriverPath)
         {
+            if(!File.Exists(chromeDriverPath))
+            {
+                throw new UpdateFailException($"Cannot found chromeDriver. path: {chromeDriverPath}", ErrorCode.ChromeDriverNotFound);
+            }
+
             Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverPath);
             Version chromeVersion = GetChromeVersionFromRegistry();
 
