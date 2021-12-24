@@ -4,16 +4,11 @@ namespace ChromeDriverUpdater
 {
     public class ProcessExecuter
     {
-        public string Run(string path, string argument)
+        public string Run(string fileName, string arguments)
         {
             Process process = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.FileName = path;
-            startInfo.Arguments = argument;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            process.StartInfo = startInfo;
+
+            process.StartInfo = GetProcessStartInfoForHiddenWindow(fileName, arguments);
             process.Start();
 
             string output = process.StandardOutput.ReadToEnd();
@@ -21,6 +16,21 @@ namespace ChromeDriverUpdater
             process.WaitForExit();
 
             return output;
+        }
+
+        private ProcessStartInfo GetProcessStartInfoForHiddenWindow(string fileName, string arguments)
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo();
+            
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            processStartInfo.CreateNoWindow = true;
+
+            processStartInfo.FileName = fileName;
+            processStartInfo.Arguments = arguments;
+
+            return processStartInfo;
         }
     }
 }

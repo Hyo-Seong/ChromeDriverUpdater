@@ -18,7 +18,7 @@ namespace ChromeDriverUpdater
         {
             if(!File.Exists(chromeDriverPath))
             {
-                throw new UpdateFailException($"Cannot found chromeDriver. path: {chromeDriverPath}", ErrorCode.ChromeDriverNotFound);
+                throw new UpdateFailException($"Cannot found chromeDriver. Path: {chromeDriverPath}", ErrorCode.ChromeDriverNotFound);
             }
 
             Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverPath);
@@ -43,8 +43,9 @@ namespace ChromeDriverUpdater
         {
             string output = new ProcessExecuter().Run("CMD.exe", $"/C \"{chromeDriverPath}\" -version");
 
+            // output like this
+            // ChromeDriver 88.0.4324.96 (68dba2d8a0b149a1d3afac56fa74648032bcf46b-refs/branch-heads/4324@{#1784})
             string versionStr = output.Split(' ')[1];
-
             Version version = new Version(versionStr);
 
             return version;
@@ -67,14 +68,11 @@ namespace ChromeDriverUpdater
                             return version;
                         }
                     }
-
-                    throw new Exception();
                 }
             }
-            catch
-            {
-                throw new UpdateFailException("Chrome Is Not Installed.", ErrorCode.ChromeNotInstalled);
-            }
+            catch { }
+            
+            throw new UpdateFailException("Chrome Is Not Installed.", ErrorCode.ChromeNotInstalled);
         }
 
         private void ShutdownChromeDriver(string chromeDriverPath)
