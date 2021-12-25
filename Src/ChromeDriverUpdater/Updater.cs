@@ -11,7 +11,8 @@ namespace ChromeDriverUpdater
     public class Updater
     {
         private const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
-        private const string FILE_NAME = "chromedriver_win32.zip";
+        private const string DOWNLOAD_ZIP_FILE_NAME = "chromedriver_win32.zip";
+        private const string CHROME_DRIVER_BASE_NAME = "chromedriver.exe";
 
         /// <exception cref="UpdateFailException"></exception>
         public void Update(string chromeDriverFullPath)
@@ -99,15 +100,15 @@ namespace ChromeDriverUpdater
             }
         }
 
-        private void UpdateChromeDriver(string existChromeDriverFullPath, Version chromeDriverVersion)
+        private void UpdateChromeDriver(string existChromeDriverFullPath, Version chromeVersion)
         {
-            string version = GetProperChromeDriverVersion(chromeDriverVersion);
-
-            string zipFileDownloadPath = DownloadChromeDriverZipFile(version);
+            string zipFileDownloadPath = DownloadChromeDriverZipFile(chromeVersion);
 
             string newChromeDriverFullPath = GetNewChromeDriverFromZipFile(zipFileDownloadPath);
 
             File.Copy(newChromeDriverFullPath, existChromeDriverFullPath, true);
+
+            File.Delete(newChromeDriverFullPath);
         }
 
         private string GetProperChromeDriverVersion(Version chromeVersion)
@@ -126,44 +127,56 @@ namespace ChromeDriverUpdater
             }
         }
 
-        private string DownloadChromeDriverZipFile(string version)
+        private string DownloadChromeDriverZipFile(Version chromeVersion)
         {
-            string url = $"{CHROME_DRIVER_BASE_URL}/{version}/{FILE_NAME}";
-            string downloadPath = Path.Combine(Path.GetTempPath(), FILE_NAME);
+            string version = GetProperChromeDriverVersion(chromeVersion);
 
-            DownloadFile(url, downloadPath);
+            string downloadUrl = $"{CHROME_DRIVER_BASE_URL}/{version}/{DOWNLOAD_ZIP_FILE_NAME}";
+            string downloadZipFileFullPath = Path.Combine(Path.GetTempPath(), DOWNLOAD_ZIP_FILE_NAME);
 
-            return downloadPath;
+            DownloadFile(downloadUrl, downloadZipFileFullPath);
+
+            return downloadZipFileFullPath;
         }
 
         private string GetNewChromeDriverFromZipFile(string zipFileDownloadPath)
         {
-            string unzipPath = Path.Combine(Path.GetTempPath(), "chromedriver_win32");
+            string unzipPath = Path.ChangeExtension(zipFileDownloadPath, string.Empty);
 
-            UnzipFile(zipFileDownloadPath, unzipPath);
+            UnzipFile(zipFileDownloadPath, unzipPath, true);
 
-            File.Delete(zipFileDownloadPath);
+            return FindNewChromeDriverFullPathFromUnzipPath(unzipPath);
+        }
 
-            DirectoryInfo directoryInfo = new DirectoryInfo(unzipPath);
+        private string FindNewChromeDriverFullPathFromUnzipPath(string chromeDriverUnzipPath)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(chromeDriverUnzipPath);
 
             FileInfo[] files = directoryInfo.GetFiles();
 
             foreach (FileInfo file in files)
             {
-                if (file.Name == "chromedriver.exe")
+                // ignore case
+                if (file.Name.ToLower() == CHROME_DRIVER_BASE_NAME.ToLower())
                 {
-                    return file.FullName;
+                    string newPath = Path.GetDirectoryName(chromeDriverUnzipPath) + file.Name;
+                    
+                    File.Copy(file.Name, newPath, true);
+
+                    Directory.Delete(chromeDriverUnzipPath, true);
+
+                    return newPath;
                 }
             }
 
             throw new UpdateFailException("Cannot Get New ChromeDriver From unzip Path", ErrorCode.CannotDownloadNewChromeDriver);
         }
 
-        private void DownloadFile(string url, string downloadPath)
+        private void DownloadFile(string downloadUrl, string downloadPath)
         {
             try
             {
-                new WebClient().DownloadFile(url, downloadPath);
+                new WebClient().DownloadFile(downloadUrl, downloadPath);
             }
             catch
             {
@@ -171,7 +184,7 @@ namespace ChromeDriverUpdater
             }
         }
 
-        private void UnzipFile(string zipPath, string unzipPath)
+        private void UnzipFile(string zipPath, string unzipPath, bool deleteZipFile = true)
         {
             try
             {
@@ -181,6 +194,11 @@ namespace ChromeDriverUpdater
                 }
 
                 ZipFile.ExtractToDirectory(zipPath, unzipPath);
+
+                if(deleteZipFile)
+                {
+                    File.Delete(zipPath);
+                }
             }
             catch
             {
