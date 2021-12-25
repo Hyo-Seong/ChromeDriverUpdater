@@ -5,52 +5,63 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace ChromeDriverUpdater
 {
     public class Updater
     {
-        private const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
-        private const string FILE_NAME = "chromedriver_win32.zip";
+        internal const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
+        internal const string DOWNLOAD_ZIP_FILE_NAME = "chromedriver_win32.zip";
+        internal const string CHROME_DRIVER_BASE_NAME = "chromedriver.exe";
 
+        /// <summary>
+        /// Update the chromedriver
+        /// <br>1. Check Chrome Version from Registry</br>
+        /// <br>2. Shutdown chromedriver (exact full path)</br>
+        /// <br>3. Download proper chromedriver from web</br>
+        /// <br>4. Replace to downloaded new chromedriver.exe</br>
+        /// </summary>
         /// <exception cref="UpdateFailException"></exception>
-        public void Update(string chromeDriverPath)
+        public void Update(string chromeDriverFullPath)
         {
-            if(!File.Exists(chromeDriverPath))
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                throw new UpdateFailException($"Cannot found chromeDriver. path: {chromeDriverPath}", ErrorCode.ChromeDriverNotFound);
+                throw new UpdateFailException(ErrorCode.UnSupportedOSPlatform);
             }
 
-            Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverPath);
+            // change to full path to shutdown chromedriver
+            chromeDriverFullPath = Path.GetFullPath(chromeDriverFullPath);
+
+            if(!File.Exists(chromeDriverFullPath))
+            {
+                throw new UpdateFailException(ErrorCode.ChromeDriverNotFound);
+            }
+
+            Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverFullPath);
             Version chromeVersion = GetChromeVersionFromRegistry();
 
-            if (!CompareVersionMajorToBuild(chromeVersion, chromeDriverVersion))
+            if (UpdateNecessary(chromeDriverVersion, chromeVersion))
             {
-                ShutdownChromeDriver(chromeDriverPath);
+                ShutdownChromeDriver(chromeDriverFullPath);
 
-                UpdateChromeDriver(chromeDriverPath, chromeVersion);
+                UpdateChromeDriver(chromeDriverFullPath, chromeVersion);
             }
         }
 
-        private bool CompareVersionMajorToBuild(Version v1, Version v2)
+        internal Version GetChromeDriverVersion(string chromeDriverFullPath)
         {
-            return (v1.Major == v2.Major &&
-                    v1.Minor == v2.Minor &&
-                    v1.Build == v2.Build);
-        }
+            string output = new ProcessExecuter().Run("CMD.exe", $"/C \"{chromeDriverFullPath}\" -version");
 
-        private Version GetChromeDriverVersion(string chromeDriverPath)
-        {
-            string output = new ProcessExecuter().Run("CMD.exe", $"/C \"{chromeDriverPath}\" -version");
-
+            // output like this
+            // ChromeDriver 88.0.4324.96 (68dba2d8a0b149a1d3afac56fa74648032bcf46b-refs/branch-heads/4324@{#1784})
             string versionStr = output.Split(' ')[1];
-
             Version version = new Version(versionStr);
 
             return version;
         }
 
-        private Version GetChromeVersionFromRegistry()
+        internal Version GetChromeVersionFromRegistry()
         {
             try
             {
@@ -58,7 +69,7 @@ namespace ChromeDriverUpdater
                 {
                     if (key != null)
                     {
-                        Object versionObject = key.GetValue("version");
+                        object versionObject = key.GetValue("version");
 
                         if (versionObject != null)
                         {
@@ -67,48 +78,58 @@ namespace ChromeDriverUpdater
                             return version;
                         }
                     }
-
-                    throw new Exception();
                 }
             }
-            catch
-            {
-                throw new UpdateFailException("Chrome Is Not Installed.", ErrorCode.ChromeNotInstalled);
-            }
+            catch { }
+
+            throw new UpdateFailException(ErrorCode.ChromeNotInstalled);
         }
 
-        private void ShutdownChromeDriver(string chromeDriverPath)
+        internal bool UpdateNecessary(Version chromeVersion, Version chromeDriverVersion)
+        {
+            return !CompareVersionMajorToBuild(chromeVersion, chromeDriverVersion);
+        }
+
+        internal bool CompareVersionMajorToBuild(Version v1, Version v2)
+        {
+            return v1.Major == v2.Major &&
+                   v1.Minor == v2.Minor &&
+                   v1.Build == v2.Build;
+        }
+
+        internal void ShutdownChromeDriver(string chromeDriverFullPath)
         {
             var processes = Process.GetProcesses();
 
             foreach (Process process in processes)
             {
-                try
+                // find exact path
+                if (process.MainWindowTitle == chromeDriverFullPath)
                 {
-                    if (process.MainModule.FileName == chromeDriverPath)
+                    try
                     {
                         process.Kill();
+                    } 
+                    catch 
+                    { 
+                        throw new UpdateFailException(ErrorCode.CannotShutdownloadChromeDriver); 
                     }
-                }
-                catch
-                {
-
                 }
             }
         }
 
-        private void UpdateChromeDriver(string existChromeDriverPath, Version chromeDriverVersion)
+        internal void UpdateChromeDriver(string existChromeDriverFullPath, Version chromeVersion)
         {
-            string version = GetProperChromeDriverVersion(chromeDriverVersion);
+            string zipFileDownloadPath = DownloadChromeDriverZipFile(chromeVersion);
 
-            string zipFileDownloadPath = DownloadChromeDriverZipFile(version);
+            string newChromeDriverFullPath = GetNewChromeDriverFromZipFile(zipFileDownloadPath);
 
-            string newChromeDriverPath = GetNewChromeDriverFromZipFile(zipFileDownloadPath);
+            File.Copy(newChromeDriverFullPath, existChromeDriverFullPath, true);
 
-            File.Copy(newChromeDriverPath, existChromeDriverPath, true);
+            File.Delete(newChromeDriverFullPath);
         }
 
-        private string GetProperChromeDriverVersion(Version chromeVersion)
+        internal string GetProperChromeDriverVersion(Version chromeVersion)
         {
             try
             {
@@ -120,56 +141,68 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Cannot get proper chromedriver version", ErrorCode.Fail);
+                throw new UpdateFailException(ErrorCode.CannotGetLatestRelease);
             }
         }
 
-        private string DownloadChromeDriverZipFile(string version)
+        internal string DownloadChromeDriverZipFile(Version chromeVersion)
         {
-            string url = $"{CHROME_DRIVER_BASE_URL}/{version}/{FILE_NAME}";
-            string downloadPath = Path.Combine(Path.GetTempPath(), FILE_NAME);
+            string version = GetProperChromeDriverVersion(chromeVersion);
 
-            DownloadFile(url, downloadPath);
+            string downloadUrl = $"{CHROME_DRIVER_BASE_URL}/{version}/{DOWNLOAD_ZIP_FILE_NAME}";
+            string downloadZipFileFullPath = Path.Combine(Path.GetTempPath(), DOWNLOAD_ZIP_FILE_NAME);
 
-            return downloadPath;
+            DownloadFile(downloadUrl, downloadZipFileFullPath);
+
+            return downloadZipFileFullPath;
         }
 
-        private string GetNewChromeDriverFromZipFile(string zipFileDownloadPath)
+        internal string GetNewChromeDriverFromZipFile(string zipFileDownloadPath)
         {
-            string unzipPath = Path.Combine(Path.GetTempPath(), "chromedriver_win32");
+            string unzipPath = Path.ChangeExtension(zipFileDownloadPath, string.Empty);
 
-            UnzipFile(zipFileDownloadPath, unzipPath);
+            UnzipFile(zipFileDownloadPath, unzipPath, true);
 
-            File.Delete(zipFileDownloadPath);
+            return FindNewChromeDriverFullPathFromUnzipPath(unzipPath);
+        }
 
-            DirectoryInfo directoryInfo = new DirectoryInfo(unzipPath);
+        internal string FindNewChromeDriverFullPathFromUnzipPath(string chromeDriverUnzipPath)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(chromeDriverUnzipPath);
 
             FileInfo[] files = directoryInfo.GetFiles();
 
             foreach (FileInfo file in files)
             {
-                if (file.Name == "chromedriver.exe")
+                // ignore case
+                if (file.Name.ToLower() == CHROME_DRIVER_BASE_NAME.ToLower())
                 {
-                    return file.FullName;
+                    string newPath = Path.GetDirectoryName(chromeDriverUnzipPath) + file.Name;
+                    
+                    File.Copy(file.Name, newPath, true);
+
+                    Directory.Delete(chromeDriverUnzipPath, true);
+
+                    return newPath;
                 }
             }
 
-            throw new UpdateFailException("Cannot Get New ChromeDriver From unzip Path", ErrorCode.CannotDownloadNewChromeDriver);
+            throw new UpdateFailException(ErrorCode.CannotDownloadNewChromeDriver);
         }
 
-        private void DownloadFile(string url, string downloadPath)
+        internal void DownloadFile(string downloadUrl, string downloadPath)
         {
             try
             {
-                new WebClient().DownloadFile(url, downloadPath);
+                new WebClient().DownloadFile(downloadUrl, downloadPath);
             }
             catch
             {
-                throw new UpdateFailException("Cannot download file", ErrorCode.CannotDownloadNewChromeDriver);
+                throw new UpdateFailException(ErrorCode.CannotDownloadNewChromeDriver);
             }
         }
 
-        private void UnzipFile(string zipPath, string unzipPath)
+        internal void UnzipFile(string zipPath, string unzipPath, bool deleteZipFile = true)
         {
             try
             {
@@ -179,12 +212,16 @@ namespace ChromeDriverUpdater
                 }
 
                 ZipFile.ExtractToDirectory(zipPath, unzipPath);
+
+                if(deleteZipFile)
+                {
+                    File.Delete(zipPath);
+                }
             }
             catch
             {
-                throw new UpdateFailException("Cannot unzip file", ErrorCode.Fail);
+                throw new UpdateFailException(ErrorCode.CannotUnzipChromeDriverZipFile);
             }
         }
-
     }
 }

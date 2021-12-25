@@ -3,39 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromeDriverUpdater", "ChromeDriverUpdater\ChromeDriverUpdater.csproj", "{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChromeDriverUpdater", "ChromeDriverUpdater\ChromeDriverUpdater.csproj", "{9A962561-22D5-4888-9983-DEE5F8B8E0A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromeDriverUpdater.Tests", "ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj", "{BC0523E2-F5EB-4645-8BFE-16823E941EC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChromeDriverUpdater.Tests", "ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj", "{CDEA5035-D058-4B0E-82FF-81A8B4ADB7D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
-		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Debug|x64.ActiveCfg = Debug|x64
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Debug|x64.Build.0 = Debug|x64
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Release|x64.ActiveCfg = Release|x64
-		{CFE9DDCC-6DC5-4CF9-BB66-54ABC5818AF6}.Release|x64.Build.0 = Release|x64
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Debug|x64.ActiveCfg = Debug|x64
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Debug|x64.Build.0 = Debug|x64
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Release|x64.ActiveCfg = Release|x64
-		{BC0523E2-F5EB-4645-8BFE-16823E941EC8}.Release|x64.Build.0 = Release|x64
+		{9A962561-22D5-4888-9983-DEE5F8B8E0A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A962561-22D5-4888-9983-DEE5F8B8E0A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A962561-22D5-4888-9983-DEE5F8B8E0A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A962561-22D5-4888-9983-DEE5F8B8E0A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDEA5035-D058-4B0E-82FF-81A8B4ADB7D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDEA5035-D058-4B0E-82FF-81A8B4ADB7D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDEA5035-D058-4B0E-82FF-81A8B4ADB7D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDEA5035-D058-4B0E-82FF-81A8B4ADB7D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1DC70AB5-567D-4EEF-9403-29E1A0902334}
+		SolutionGuid = {CB5267A2-C200-45A5-8AC0-D0D0D22FD064}
 	EndGlobalSection
 EndGlobal
