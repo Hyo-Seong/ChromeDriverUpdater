@@ -3,7 +3,6 @@ name: dotnet test
 on: [push]
 
 env:
-  SOLUTION_PATH: 'Src\ChromeDriverUpdater\ChromeDriverUpdater.sln'
   PROJECT_PATH: 'Src\ChromeDriverUpdater\ChromeDriverUpdater.csproj'
   TEST_PROJECT_PATH: 'Src\ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj'
 
@@ -13,7 +12,7 @@ jobs:
     runs-on: 'windows-latest'
     strategy:
       matrix:
-        dotnet-version: [ '6.0.x' ]
+        dotnet-version: [ '5.0.x' ]
 
     steps:
       - uses: actions/checkout@v2
