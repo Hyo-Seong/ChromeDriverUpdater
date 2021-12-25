@@ -1,4 +1,4 @@
-name: dotnet test
+name: Test
 
 on: [push]
 
@@ -7,27 +7,30 @@ env:
   TEST_PROJECT_PATH: 'Src\ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj'
 
 jobs:
-  build:
-
+  Test:
     runs-on: 'windows-latest'
 
     steps:
+      - name: 'checkout'
       - uses: actions/checkout@v2
-      - name: use dotnet
+
+      - name: 'use dotnet 5.0.x'
         uses: actions/setup-dotnet@v1.7.2
         with:
           dotnet-version: '5.0.x'
-      - name: use dotnet
+      - name: 'use dotnet 6.0.x'
         uses: actions/setup-dotnet@v1.7.2
         with:
           dotnet-version: '6.0.x'
-      - name: 'Restore packages'
+
+      - name: 'restore packages'
         run: dotnet restore ${{ env.PROJECT_PATH }}
-      - name: 'Build project'
+      - name: 'build project'
         run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
-      - name: 'Restore packages'
+
+      - name: 'restore test packages'
         run: dotnet restore ${{ env.TEST_PROJECT_PATH }}
-      - name: 'Build project'
+      - name: 'build test project'
         run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
-      - name: 'Test project'
+      - name: 'test project'
         run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal --logger trx
