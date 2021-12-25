@@ -1,10 +1,12 @@
 ﻿using ChromeDriverUpdater.Models;
 using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace ChromeDriverUpdater
 {
@@ -24,6 +26,11 @@ namespace ChromeDriverUpdater
         /// <exception cref="UpdateFailException"></exception>
         public void Update(string chromeDriverFullPath)
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                throw new UpdateFailException(ErrorCode.UnSupportedOSPlatform);
+            }
+
             // change to full path to shutdown chromedriver
             chromeDriverFullPath = Path.GetFullPath(chromeDriverFullPath);
 
