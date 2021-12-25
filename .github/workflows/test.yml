@@ -3,8 +3,8 @@ name: dotnet test
 on: [push]
 
 env:
-  PROJECT_PATH: 'Src\ChromeDriverUpdater/ChromeDriverUpdater.csproj'
-  TEST_PROJECT_PATH: 'Src/ChromeDriverUpdater.Tests/ChromeDriverUpdater.Tests.csproj'
+  PROJECT_PATH: 'Src\ChromeDriverUpdater\ChromeDriverUpdater.csproj'
+  TEST_PROJECT_PATH: 'Src\ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj'
 
 jobs:
   build:
