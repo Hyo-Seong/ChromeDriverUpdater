@@ -2,11 +2,13 @@
 {
     public enum ErrorCode
     {
-        Success = 1,
-        Fail = -1,
+        UnknownError = -1,
         CannotDownloadNewChromeDriver = -2,
         CannotGetLatestRelease = -3,
         ChromeNotInstalled = -4,
-        ChromeDriverNotFound = -5
+        ChromeDriverNotFound = -5,
+        CannotShutdownloadChromeDriver = -6,
+        CannotUnzipChromeDriverZipFile = -7,
+        UnSupportedOSPlatform = -8
     }
 }

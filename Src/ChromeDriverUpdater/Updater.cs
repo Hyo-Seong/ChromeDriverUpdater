@@ -30,13 +30,13 @@ namespace ChromeDriverUpdater
 
             if(!File.Exists(chromeDriverFullPath))
             {
-                throw new UpdateFailException($"Cannot found chromeDriver. Path: {chromeDriverFullPath}", ErrorCode.ChromeDriverNotFound);
+                throw new UpdateFailException(ErrorCode.ChromeDriverNotFound);
             }
 
             Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverFullPath);
             Version chromeVersion = GetChromeVersionFromRegistry();
 
-            if (!CompareVersionMajorToBuild(chromeVersion, chromeDriverVersion))
+            if (UpdateNecessary(chromeDriverVersion, chromeVersion))
             {
                 ShutdownChromeDriver(chromeDriverFullPath);
 
@@ -131,7 +131,7 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Cannot get proper chromedriver version", ErrorCode.Fail);
+                throw new UpdateFailException(ErrorCode.CannotGetLatestRelease);
             }
         }
 
@@ -177,7 +177,7 @@ namespace ChromeDriverUpdater
                 }
             }
 
-            throw new UpdateFailException("Cannot Get New ChromeDriver From unzip Path", ErrorCode.CannotDownloadNewChromeDriver);
+            throw new UpdateFailException(ErrorCode.CannotDownloadNewChromeDriver);
         }
 
         private void DownloadFile(string downloadUrl, string downloadPath)
@@ -188,7 +188,7 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Cannot download file", ErrorCode.CannotDownloadNewChromeDriver);
+                throw new UpdateFailException(ErrorCode.CannotDownloadNewChromeDriver);
             }
         }
 
@@ -210,7 +210,7 @@ namespace ChromeDriverUpdater
             }
             catch
             {
-                throw new UpdateFailException("Cannot unzip file", ErrorCode.Fail);
+                throw new UpdateFailException(ErrorCode.CannotUnzipChromeDriverZipFile);
             }
         }
 
