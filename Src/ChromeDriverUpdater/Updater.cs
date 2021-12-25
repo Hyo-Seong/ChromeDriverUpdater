@@ -14,7 +14,6 @@ namespace ChromeDriverUpdater
         private const string DOWNLOAD_ZIP_FILE_NAME = "chromedriver_win32.zip";
         private const string CHROME_DRIVER_BASE_NAME = "chromedriver.exe";
 
-
         /// <summary>
         /// Update the chromedriver
         /// <br>1. Check Chrome Version from Registry</br>
@@ -44,13 +43,6 @@ namespace ChromeDriverUpdater
             }
         }
 
-        private bool CompareVersionMajorToBuild(Version v1, Version v2)
-        {
-            return (v1.Major == v2.Major &&
-                    v1.Minor == v2.Minor &&
-                    v1.Build == v2.Build);
-        }
-
         private Version GetChromeDriverVersion(string chromeDriverFullPath)
         {
             string output = new ProcessExecuter().Run("CMD.exe", $"/C \"{chromeDriverFullPath}\" -version");
@@ -71,7 +63,7 @@ namespace ChromeDriverUpdater
                 {
                     if (key != null)
                     {
-                        Object versionObject = key.GetValue("version");
+                        object versionObject = key.GetValue("version");
 
                         if (versionObject != null)
                         {
@@ -83,8 +75,20 @@ namespace ChromeDriverUpdater
                 }
             }
             catch { }
-            
-            throw new UpdateFailException("Chrome Is Not Installed.", ErrorCode.ChromeNotInstalled);
+
+            throw new UpdateFailException(ErrorCode.ChromeNotInstalled);
+        }
+
+        private bool UpdateNecessary(Version chromeVersion, Version chromeDriverVersion)
+        {
+            return !CompareVersionMajorToBuild(chromeVersion, chromeDriverVersion);
+        }
+
+        private bool CompareVersionMajorToBuild(Version v1, Version v2)
+        {
+            return v1.Major == v2.Major &&
+                   v1.Minor == v2.Minor &&
+                   v1.Build == v2.Build;
         }
 
         private void ShutdownChromeDriver(string chromeDriverFullPath)
@@ -93,17 +97,17 @@ namespace ChromeDriverUpdater
 
             foreach (Process process in processes)
             {
-                try
+                // find exact path
+                if (process.MainWindowTitle == chromeDriverFullPath)
                 {
-                    // find exact path
-                    if (process.MainModule.FileName == chromeDriverFullPath)
+                    try
                     {
                         process.Kill();
+                    } 
+                    catch 
+                    { 
+                        throw new UpdateFailException(ErrorCode.CannotShutdownloadChromeDriver); 
                     }
-                }
-                catch
-                {
-
                 }
             }
         }
