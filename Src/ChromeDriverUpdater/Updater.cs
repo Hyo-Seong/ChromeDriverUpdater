@@ -14,21 +14,24 @@ namespace ChromeDriverUpdater
         private const string FILE_NAME = "chromedriver_win32.zip";
 
         /// <exception cref="UpdateFailException"></exception>
-        public void Update(string chromeDriverPath)
+        public void Update(string chromeDriverFullPath)
         {
-            if(!File.Exists(chromeDriverPath))
+            // change to full path to shutdown chromedriver
+            chromeDriverFullPath = Path.GetFullPath(chromeDriverFullPath);
+
+            if(!File.Exists(chromeDriverFullPath))
             {
-                throw new UpdateFailException($"Cannot found chromeDriver. Path: {chromeDriverPath}", ErrorCode.ChromeDriverNotFound);
+                throw new UpdateFailException($"Cannot found chromeDriver. Path: {chromeDriverFullPath}", ErrorCode.ChromeDriverNotFound);
             }
 
-            Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverPath);
+            Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverFullPath);
             Version chromeVersion = GetChromeVersionFromRegistry();
 
             if (!CompareVersionMajorToBuild(chromeVersion, chromeDriverVersion))
             {
-                ShutdownChromeDriver(chromeDriverPath);
+                ShutdownChromeDriver(chromeDriverFullPath);
 
-                UpdateChromeDriver(chromeDriverPath, chromeVersion);
+                UpdateChromeDriver(chromeDriverFullPath, chromeVersion);
             }
         }
 
@@ -39,9 +42,9 @@ namespace ChromeDriverUpdater
                     v1.Build == v2.Build);
         }
 
-        private Version GetChromeDriverVersion(string chromeDriverPath)
+        private Version GetChromeDriverVersion(string chromeDriverFullPath)
         {
-            string output = new ProcessExecuter().Run("CMD.exe", $"/C \"{chromeDriverPath}\" -version");
+            string output = new ProcessExecuter().Run("CMD.exe", $"/C \"{chromeDriverFullPath}\" -version");
 
             // output like this
             // ChromeDriver 88.0.4324.96 (68dba2d8a0b149a1d3afac56fa74648032bcf46b-refs/branch-heads/4324@{#1784})
@@ -75,7 +78,7 @@ namespace ChromeDriverUpdater
             throw new UpdateFailException("Chrome Is Not Installed.", ErrorCode.ChromeNotInstalled);
         }
 
-        private void ShutdownChromeDriver(string chromeDriverPath)
+        private void ShutdownChromeDriver(string chromeDriverFullPath)
         {
             var processes = Process.GetProcesses();
 
@@ -83,7 +86,8 @@ namespace ChromeDriverUpdater
             {
                 try
                 {
-                    if (process.MainModule.FileName == chromeDriverPath)
+                    // find exact path
+                    if (process.MainModule.FileName == chromeDriverFullPath)
                     {
                         process.Kill();
                     }
@@ -95,15 +99,15 @@ namespace ChromeDriverUpdater
             }
         }
 
-        private void UpdateChromeDriver(string existChromeDriverPath, Version chromeDriverVersion)
+        private void UpdateChromeDriver(string existChromeDriverFullPath, Version chromeDriverVersion)
         {
             string version = GetProperChromeDriverVersion(chromeDriverVersion);
 
             string zipFileDownloadPath = DownloadChromeDriverZipFile(version);
 
-            string newChromeDriverPath = GetNewChromeDriverFromZipFile(zipFileDownloadPath);
+            string newChromeDriverFullPath = GetNewChromeDriverFromZipFile(zipFileDownloadPath);
 
-            File.Copy(newChromeDriverPath, existChromeDriverPath, true);
+            File.Copy(newChromeDriverFullPath, existChromeDriverFullPath, true);
         }
 
         private string GetProperChromeDriverVersion(Version chromeVersion)
