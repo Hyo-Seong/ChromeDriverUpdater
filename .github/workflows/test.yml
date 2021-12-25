@@ -7,7 +7,7 @@ env:
   TEST_PROJECT_PATH: 'Src\ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj'
 
 jobs:
-  build:
+  test:
     runs-on: 'windows-latest'
 
     steps:
