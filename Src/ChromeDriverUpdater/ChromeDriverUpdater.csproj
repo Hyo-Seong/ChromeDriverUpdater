@@ -10,9 +10,12 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Reference Include="mscorlib">
-      <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll</HintPath>
-    </Reference>
+    <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+	  <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+	</AssemblyAttribute>
+  </ItemGroup>
 </Project>
