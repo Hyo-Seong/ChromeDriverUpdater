@@ -1,6 +1,9 @@
-name: dotnet package
+name: dotnet test
 
 on: [push]
+
+env:
+  PROJECT_PATH: 'Src/ChromeDriverUpdater/ChromeDriverUpdater.csproj'
 
 jobs:
   build:
