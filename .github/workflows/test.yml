@@ -1,0 +1,24 @@
+name: dotnet package
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: 'windows-latest'
+    strategy:
+      matrix:
+        dotnet-version: ['4.5', '4.8', '5.0.x', '6.0.x' ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
