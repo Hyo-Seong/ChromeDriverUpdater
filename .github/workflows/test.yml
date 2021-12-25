@@ -22,8 +22,12 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: 'Restore packages'
-        run: dotnet restore ${{ env.SOLUTION_PATH }}
+        run: dotnet restore ${{ env.PROJECT_PATH }}
       - name: 'Build project'
-        run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+      - name: 'Restore packages'
+        run: dotnet restore ${{ env.TEST_PROJECT_PATH }}
+      - name: 'Build project'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
       - name: 'Test project'
         run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
