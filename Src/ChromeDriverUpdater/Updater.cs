@@ -14,6 +14,14 @@ namespace ChromeDriverUpdater
         private const string DOWNLOAD_ZIP_FILE_NAME = "chromedriver_win32.zip";
         private const string CHROME_DRIVER_BASE_NAME = "chromedriver.exe";
 
+
+        /// <summary>
+        /// Update the chromedriver
+        /// <br>1. Check Chrome Version from Registry</br>
+        /// <br>2. Shutdown chromedriver (exact full path)</br>
+        /// <br>3. Download proper chromedriver from web</br>
+        /// <br>4. Replace to downloaded new chromedriver.exe</br>
+        /// </summary>
         /// <exception cref="UpdateFailException"></exception>
         public void Update(string chromeDriverFullPath)
         {
