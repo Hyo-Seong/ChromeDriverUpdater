@@ -10,16 +10,17 @@ jobs:
   build:
 
     runs-on: 'windows-latest'
-    strategy:
-      matrix:
-        dotnet-version: [ '5.0.x', '6.0.x' ]
 
     steps:
       - uses: actions/checkout@v2
-      - name: Setup
+      - name: use dotnet
         uses: actions/setup-dotnet@v1.7.2
         with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: '5.0.x'
+      - name: use dotnet
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '6.0.x'
       - name: 'Restore packages'
         run: dotnet restore ${{ env.PROJECT_PATH }}
       - name: 'Build project'
@@ -29,4 +30,4 @@ jobs:
       - name: 'Build project'
         run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
       - name: 'Test project'
-        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal --logger trx
