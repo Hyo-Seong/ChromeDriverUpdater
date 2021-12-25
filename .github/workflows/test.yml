@@ -12,7 +12,9 @@ jobs:
         uses: actions/setup-dotnet@v1.7.2
         with:
           dotnet-version: '6.0.x'
-      - name: Build
+      - name: 'Restore packages'
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+      - name: 'Build project'
         run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
-      - name: Test
+      - name: 'Test project'
         run: dotnet test --no-restore --verbosity normal
