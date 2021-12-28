@@ -6,6 +6,13 @@
 
 [NuGet Package](https://www.nuget.org/packages/ChromeDriverUpdater)
 
+## Available OS
+OS | Available
+----|----
+Windows | O
+Mac|X
+Linux|X
+
 ## Usage
 
 ```csharp
