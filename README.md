@@ -1,5 +1,6 @@
 # ChromeDriverUpdater
 
+[![Build Status (ChromeDriverUpdater)](https://github.com/hyo-seong/chromedriverupdater/workflows/Test/badge.svg)](https://github.com/hyo-seong/chromedriverupdater/actions)
 [![License (ChromeDriverUpdater)](https://img.shields.io/github/license/Hyo-Seong/chromedriverupdater?style=flat-square)](https://github.com/Hyo-Seong/ChromeDriverUpdater/blob/main/LICENSE.md)
 [![NuGet version (ChromeDriverUpdater)](https://img.shields.io/nuget/v/ChromeDriverUpdater.svg?style=flat-square)](https://www.nuget.org/packages/ChromeDriverUpdater/)
 [![NuGet downloads (ChromeDriverUpdater)](https://img.shields.io/nuget/dt/ChromeDriverUpdater.svg?style=flat-square)](https://www.nuget.org/packages/ChromeDriverUpdater/)
