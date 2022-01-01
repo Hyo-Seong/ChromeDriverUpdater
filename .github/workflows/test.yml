@@ -54,14 +54,16 @@ jobs:
       - name: 'restore packages'
         run: dotnet restore ${{ env.PROJECT_PATH }}
       - name: 'build net5'
-        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration -f net5 Release
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release -f net5 
       - name: 'build net6'
-        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration -f net6 Release
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release -f net6 
 
       - name: 'restore test packages'
         run: dotnet restore ${{ env.TEST_PROJECT_PATH }}
-      - name: 'build test project'
-        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
+      - name: 'build test net5'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release -f net5
+      - name: 'build test net5'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release -f net6
       - name: 'test net5'
         run: dotnet test ${{ env.TEST_PROJECT_PATH }} -f net5 --no-restore --verbosity normal
       - name: 'test net6'
