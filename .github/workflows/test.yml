@@ -7,7 +7,7 @@ env:
   TEST_PROJECT_PATH: 'Src\ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj'
 
 jobs:
-  test:
+  windows-latest:
     runs-on: 'windows-latest'
 
     steps:
@@ -32,4 +32,35 @@ jobs:
       - name: 'build test project'
         run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
       - name: 'test project'
-        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal --logger trx
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal
+        
+  ubuntu-latest:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 'use dotnet 5.0.x'
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '5.0.x'
+      - name: 'use dotnet 6.0.x'
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: 'restore packages'
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+      - name: 'build net5'
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration -f net5 Release
+      - name: 'build net6'
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration -f net6 Release
+
+      - name: 'restore test packages'
+        run: dotnet restore ${{ env.TEST_PROJECT_PATH }}
+      - name: 'build test project'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
+      - name: 'test net5'
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} -f net5 --no-restore --verbosity normal
+      - name: 'test net6'
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} -f net6 --no-restore --verbosity normal
