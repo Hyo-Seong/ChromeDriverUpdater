@@ -23,6 +23,10 @@ jobs:
         uses: actions/setup-dotnet@v1.7.2
         with:
           dotnet-version: '6.0.x'
+          
+      - name: 'setup chrome'
+        uses: browser-actions/setup-chrome@latest
+        run: chrome --version
 
       - name: 'restore packages'
         run: dotnet restore ${{ env.PROJECT_PATH }}
@@ -50,6 +54,10 @@ jobs:
         uses: actions/setup-dotnet@v1.7.2
         with:
           dotnet-version: '6.0.x'
+
+      - name: 'setup chrome'
+        uses: browser-actions/setup-chrome@latest
+        run: chrome --version
 
       - name: 'restore packages'
         run: dotnet restore ${{ env.PROJECT_PATH }}
