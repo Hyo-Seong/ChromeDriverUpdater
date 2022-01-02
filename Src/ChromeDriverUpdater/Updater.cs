@@ -33,7 +33,7 @@ namespace ChromeDriverUpdater
                 throw new UpdateFailException(ErrorCode.ChromeDriverNotFound);
             }
 
-            updateHelper = GetUpdate();
+            updateHelper = GetUpdateHelper();
 
             Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverFullPath);
             Version chromeVersion = updateHelper.GetChromeVersion();
@@ -48,7 +48,7 @@ namespace ChromeDriverUpdater
             }
         }
 
-        internal IUpdateHelper GetUpdate()
+        internal IUpdateHelper GetUpdateHelper()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
