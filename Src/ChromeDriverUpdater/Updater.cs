@@ -13,7 +13,7 @@ namespace ChromeDriverUpdater
     {
         internal const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
 
-        private IUpdateHelper update;
+        private IUpdateHelper updateHelper;
 
         /// <summary>
         /// Update the chromedriver
@@ -33,14 +33,14 @@ namespace ChromeDriverUpdater
                 throw new UpdateFailException(ErrorCode.ChromeDriverNotFound);
             }
 
-            update = GetUpdate();
+            updateHelper = GetUpdate();
 
             Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverFullPath);
-            Version chromeVersion = update.GetChromeVersion();
+            Version chromeVersion = updateHelper.GetChromeVersion();
 
             if (UpdateNecessary(chromeDriverVersion, chromeVersion))
             {
-                if(update is WindowsUpdateHelper){
+                if(updateHelper is WindowsUpdateHelper){
                     ShutdownChromeDriver(chromeDriverFullPath);
                 }
 
@@ -141,8 +141,8 @@ namespace ChromeDriverUpdater
         {
             string version = GetProperChromeDriverVersion(chromeVersion);
 
-            string downloadUrl = $"{CHROME_DRIVER_BASE_URL}/{version}/{update.ChromeDriverZipFileName}";
-            string downloadZipFileFullPath = Path.Combine(Path.GetTempPath(), update.ChromeDriverZipFileName);
+            string downloadUrl = $"{CHROME_DRIVER_BASE_URL}/{version}/{updateHelper.ChromeDriverZipFileName}";
+            string downloadZipFileFullPath = Path.Combine(Path.GetTempPath(), updateHelper.ChromeDriverZipFileName);
 
             DownloadFile(downloadUrl, downloadZipFileFullPath);
 
@@ -167,7 +167,7 @@ namespace ChromeDriverUpdater
             foreach (FileInfo file in files)
             {
                 // ignore case
-                if (file.Name.ToLower() == update.ChromeDriverName.ToLower())
+                if (file.Name.ToLower() == updateHelper.ChromeDriverName.ToLower())
                 {
                     string newPath = Path.Combine(Path.GetDirectoryName(chromeDriverUnzipPath), file.Name);
                     
