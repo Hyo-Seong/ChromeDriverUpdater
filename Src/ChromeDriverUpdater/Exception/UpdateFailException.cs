@@ -11,5 +11,10 @@ namespace ChromeDriverUpdater
         {
             ErrorCode = errorCode;
         }
+
+        public override string ToString()
+        {
+            return $"ErrorCode: {ErrorCode}" + Environment.NewLine + base.ToString() ;
+        }
     }
 }
