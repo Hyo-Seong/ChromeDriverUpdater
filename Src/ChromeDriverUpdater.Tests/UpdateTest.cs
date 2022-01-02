@@ -13,39 +13,32 @@ namespace ChromeDriverUpdater.Tests
         private const string LINUX_TEST_CHROMEDRIVER_NAME = "chromedriver_linux64";
         private const string LINUX_CHROMEDRIVER_NAME = "chromedriver";
 
-
         [Test]
         public void ChromeDriverUpdateTest()
         {
+            string chromeDriverName = string.Empty;
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                if (File.Exists(WIN_CHROMEDRIVER_NAME))
-                {
-                    File.Delete(WIN_CHROMEDRIVER_NAME);
-                }
-
-                File.Copy(WIN_TEST_CHROMEDRIVER_NAME, WIN_CHROMEDRIVER_NAME);
+                chromeDriverName = WIN_CHROMEDRIVER_NAME;
+                SetTestFile(WIN_TEST_CHROMEDRIVER_NAME, chromeDriverName);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                if (File.Exists(LINUX_CHROMEDRIVER_NAME))
-                {
-                    File.Delete(LINUX_CHROMEDRIVER_NAME);
-                }
-
-                File.Copy(LINUX_TEST_CHROMEDRIVER_NAME, LINUX_CHROMEDRIVER_NAME);
+                chromeDriverName = LINUX_CHROMEDRIVER_NAME;
+                SetTestFile(LINUX_TEST_CHROMEDRIVER_NAME, chromeDriverName);
 
                 ProcessExecuter processExecuter = new ProcessExecuter();
-                processExecuter.Run("chmod", "755 {LINUX_CHROMEDRIVER_NAME}");
+                processExecuter.Run("chmod", $"755 {chromeDriverName}");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                // tbd
+                throw new NotImplementedException();
             }
 
             Updater updater = new Updater();
             
-            updater.Update("chromedriver.exe");
+            updater.Update(chromeDriverName);
 
             Assert.True(true);
         }
@@ -62,6 +55,16 @@ namespace ChromeDriverUpdater.Tests
             {
                 Assert.IsTrue(exc.ErrorCode == Models.ErrorCode.ChromeDriverNotFound);
             }
+        }
+
+        private void SetTestFile(string testFile, string renameTo)
+        {
+            if (File.Exists(renameTo))
+            {
+                File.Delete(renameTo);
+            }
+
+            File.Copy(testFile, renameTo);
         }
     }
 }
