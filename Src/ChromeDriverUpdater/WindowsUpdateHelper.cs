@@ -4,7 +4,7 @@ using System;
 
 namespace ChromeDriverUpdater
 {
-    internal class WindowsUpdater : IUpdater
+    internal class WindowsUpdateHelper : IUpdateHelper
     {
         public string ChromeDriverName => "chromedriver.exe";
         public string ChromeDriverZipFileName => "chromedriver_win32.zip";

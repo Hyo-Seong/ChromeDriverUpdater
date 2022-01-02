@@ -13,7 +13,7 @@ namespace ChromeDriverUpdater
     {
         internal const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
 
-        private IUpdater update;
+        private IUpdateHelper update;
 
         /// <summary>
         /// Update the chromedriver
@@ -40,7 +40,7 @@ namespace ChromeDriverUpdater
 
             if (UpdateNecessary(chromeDriverVersion, chromeVersion))
             {
-                if(update is WindowsUpdater){
+                if(update is WindowsUpdateHelper){
                     ShutdownChromeDriver(chromeDriverFullPath);
                 }
 
@@ -48,15 +48,15 @@ namespace ChromeDriverUpdater
             }
         }
 
-        internal IUpdater GetUpdate()
+        internal IUpdateHelper GetUpdate()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return new WindowsUpdater();
+                return new WindowsUpdateHelper();
             }
             else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return new LinuxUpdater();
+                return new LinuxUpdateHelper();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {

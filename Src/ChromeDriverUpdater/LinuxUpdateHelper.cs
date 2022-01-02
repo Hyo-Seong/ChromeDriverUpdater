@@ -2,7 +2,7 @@
 
 namespace ChromeDriverUpdater
 {
-    internal class LinuxUpdater : IUpdater
+    internal class LinuxUpdateHelper : IUpdateHelper
     {
         public string ChromeDriverName => "chromedriver";
         public string ChromeDriverZipFileName => "chromedriver_linux64.zip";

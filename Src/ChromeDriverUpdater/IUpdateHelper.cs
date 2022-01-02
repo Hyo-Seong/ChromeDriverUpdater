@@ -2,7 +2,7 @@
 
 namespace ChromeDriverUpdater
 {
-    internal interface IUpdater
+    internal interface IUpdateHelper
     {
         string ChromeDriverName { get; }
         string ChromeDriverZipFileName { get; }
