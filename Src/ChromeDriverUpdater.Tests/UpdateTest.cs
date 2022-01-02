@@ -82,7 +82,7 @@ namespace ChromeDriverUpdater.Tests
                 RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Google\\Chrome\\BLBeacon");
                 if (key == null)
                 {
-                    key = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Office\\Outlook\\FormRegions\\tesssst");
+                    key = Registry.CurrentUser.CreateSubKey("Software\\Google\\Chrome\\BLBeacon");
                 }
 
                 key.SetValue("version", "96.0.4664.110");
