@@ -10,9 +10,9 @@
 ## Available OS
 OS | Available
 ----|----
-Windows | O
+Windows|O
 Mac|X
-Linux|X
+Linux|O
 
 ## Usage
 
