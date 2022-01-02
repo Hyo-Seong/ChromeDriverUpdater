@@ -9,25 +9,6 @@ namespace ChromeDriverUpdater.Tests
     public class UpdateTest
     {
         [Test]
-        public void LinuxTest()
-        {
-
-            Updater updater = new Updater();
-            try
-            {
-                updater.Update("chromedriver");
-            } 
-            catch(UpdateFailException exc)
-            {
-                Console.WriteLine(exc);
-                // In Github action, Chrome is not downloaded.
-                // Or cannot access to registry.
-                Assert.IsTrue(exc.ErrorCode == Models.ErrorCode.ChromeNotInstalled);
-            }
-            Assert.IsTrue(true);
-        }
-
-        [Test]
         public void ChromeDriverUpdateTest()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -48,6 +29,8 @@ namespace ChromeDriverUpdater.Tests
 
                 File.Copy("chromedriver_linux64", "chromedriver");
 
+                ProcessExecuter p = new ProcessExecuter();
+                p.Run("chmod chromedriver", "-r 755");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
@@ -55,16 +38,8 @@ namespace ChromeDriverUpdater.Tests
             }
 
             Updater updater = new Updater();
-            try
-            {
-                updater.Update("chromedriver.exe");
-            } 
-            catch(UpdateFailException exc)
-            {
-                // In Github action, Chrome is not downloaded.
-                // Or cannot access to registry.
-                Assert.IsTrue(exc.ErrorCode == Models.ErrorCode.ChromeNotInstalled);
-            }
+            
+            updater.Update("chromedriver.exe");
 
             Assert.True(true);
         }
