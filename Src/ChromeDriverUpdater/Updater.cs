@@ -12,8 +12,8 @@ namespace ChromeDriverUpdater
     public class Updater
     {
         internal const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
-        internal const string DOWNLOAD_ZIP_FILE_NAME = "chromedriver_win32.zip";
-        internal const string CHROME_DRIVER_BASE_NAME = "chromedriver.exe";
+
+        private IUpdater update;
 
         /// <summary>
         /// Update the chromedriver
@@ -25,21 +25,18 @@ namespace ChromeDriverUpdater
         /// <exception cref="UpdateFailException"></exception>
         public void Update(string chromeDriverFullPath)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                throw new UpdateFailException(ErrorCode.UnSupportedOSPlatform);
-            }
-
             // change to full path to shutdown chromedriver
             chromeDriverFullPath = Path.GetFullPath(chromeDriverFullPath);
 
-            if(!File.Exists(chromeDriverFullPath))
+            if (!File.Exists(chromeDriverFullPath))
             {
                 throw new UpdateFailException(ErrorCode.ChromeDriverNotFound);
             }
 
-            Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverFullPath);
-            Version chromeVersion = GetChromeVersionFromRegistry();
+            update = GetUpdate();
+
+            Version chromeDriverVersion = update.GetChromeDriverVersion(chromeDriverFullPath);
+            Version chromeVersion = update.GetChromeVersion();
 
             if (UpdateNecessary(chromeDriverVersion, chromeVersion))
             {
@@ -49,40 +46,22 @@ namespace ChromeDriverUpdater
             }
         }
 
-        internal Version GetChromeDriverVersion(string chromeDriverFullPath)
+        internal IUpdater GetUpdate()
         {
-            string output = new ProcessExecuter().Run("CMD.exe", $"/C \"{chromeDriverFullPath}\" -version");
-
-            // output like this
-            // ChromeDriver 88.0.4324.96 (68dba2d8a0b149a1d3afac56fa74648032bcf46b-refs/branch-heads/4324@{#1784})
-            string versionStr = output.Split(' ')[1];
-            Version version = new Version(versionStr);
-
-            return version;
-        }
-
-        internal Version GetChromeVersionFromRegistry()
-        {
-            try
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Google\\Chrome\\BLBeacon"))
-                {
-                    if (key != null)
-                    {
-                        object versionObject = key.GetValue("version");
-
-                        if (versionObject != null)
-                        {
-                            Version version = new Version(versionObject as String);
-
-                            return version;
-                        }
-                    }
-                }
+                return new WindowsUpdater();
             }
-            catch { }
+            else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
 
-            throw new UpdateFailException(ErrorCode.ChromeNotInstalled);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+
+            }
+
+            return null;
         }
 
         internal bool UpdateNecessary(Version chromeVersion, Version chromeDriverVersion)
@@ -149,8 +128,8 @@ namespace ChromeDriverUpdater
         {
             string version = GetProperChromeDriverVersion(chromeVersion);
 
-            string downloadUrl = $"{CHROME_DRIVER_BASE_URL}/{version}/{DOWNLOAD_ZIP_FILE_NAME}";
-            string downloadZipFileFullPath = Path.Combine(Path.GetTempPath(), DOWNLOAD_ZIP_FILE_NAME);
+            string downloadUrl = $"{CHROME_DRIVER_BASE_URL}/{version}/{update.ChromeDriverZipFileName}";
+            string downloadZipFileFullPath = Path.Combine(Path.GetTempPath(), update.ChromeDriverZipFileName);
 
             DownloadFile(downloadUrl, downloadZipFileFullPath);
 
@@ -175,7 +154,7 @@ namespace ChromeDriverUpdater
             foreach (FileInfo file in files)
             {
                 // ignore case
-                if (file.Name.ToLower() == CHROME_DRIVER_BASE_NAME.ToLower())
+                if (file.Name.ToLower() == update.ChromeDriverName.ToLower())
                 {
                     string newPath = Path.GetDirectoryName(chromeDriverUnzipPath) + file.Name;
                     
