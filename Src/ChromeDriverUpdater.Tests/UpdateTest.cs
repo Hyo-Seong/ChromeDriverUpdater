@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.Win32;
 using NUnit.Framework;
 
 namespace ChromeDriverUpdater.Tests
@@ -22,6 +23,8 @@ namespace ChromeDriverUpdater.Tests
             {
                 chromeDriverName = WIN_CHROMEDRIVER_NAME;
                 SetTestFile(WIN_TEST_CHROMEDRIVER_NAME, chromeDriverName);
+
+                SetWindowsRegistryIfNotExist();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
@@ -65,6 +68,25 @@ namespace ChromeDriverUpdater.Tests
             }
 
             File.Copy(testFile, renameTo);
+        }
+
+        private void SetWindowsRegistryIfNotExist()
+        {
+            try
+            {
+                WindowsUpdateHelper updater1 = new WindowsUpdateHelper();
+                updater1.GetChromeVersion();
+            }
+            catch
+            {
+                RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Google\\Chrome\\BLBeacon");
+                if (key == null)
+                {
+                    key = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Office\\Outlook\\FormRegions\\tesssst");
+                }
+
+                key.SetValue("version", "96.0.4664.110");
+            }
         }
     }
 }
