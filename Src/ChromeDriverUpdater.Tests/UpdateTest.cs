@@ -35,8 +35,8 @@ namespace ChromeDriverUpdater.Tests
 
                 File.Copy(LINUX_TEST_CHROMEDRIVER_NAME, LINUX_CHROMEDRIVER_NAME);
 
-                ProcessExecuter p = new ProcessExecuter();
-                p.Run($"chmod ./{LINUX_CHROMEDRIVER_NAME}", "-r 755");
+                ProcessExecuter processExecuter = new ProcessExecuter();
+                processExecuter.Run("chmod", "755 {LINUX_CHROMEDRIVER_NAME}");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
