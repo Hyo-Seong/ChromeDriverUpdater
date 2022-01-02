@@ -7,14 +7,9 @@ namespace ChromeDriverUpdater
         public string ChromeDriverName => "chromedriver";
         public string ChromeDriverZipFileName => "chromedriver_linux64.zip";
 
-        public Version GetChromeDriverVersion(string chromeDriverPath)
-        {
-            throw new NotImplementedException();
-        }
-
         public Version GetChromeVersion()
         {
-            string[] aa = new string[] 
+            string[] chromeNameArray = new string[] 
             {
                 "google-chrome",
                 "google-chrome-stable",
@@ -24,17 +19,16 @@ namespace ChromeDriverUpdater
                 "chromium"
             };
 
-            foreach(string a in aa)
+            foreach(string chromeName in chromeNameArray)
             {
                 try
                 {
                     ProcessExecuter processExecuter = new ProcessExecuter();
-                    string result = processExecuter.Run(a, "--version");
+                    string executeResult = processExecuter.Run(chromeName, "--version");
 
-                    string ad = result.Replace("Google Chrome", string.Empty);
-                    ad = ad.Trim();
+                    string versionString = executeResult.Replace("Google Chrome", string.Empty).Trim();
 
-                    return new Version(ad);
+                    return new Version(versionString);
                 } catch (Exception exc)
                 {
                     Console.WriteLine(exc.ToString());

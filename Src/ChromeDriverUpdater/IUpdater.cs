@@ -6,7 +6,6 @@ namespace ChromeDriverUpdater
     {
         string ChromeDriverName { get; }
         string ChromeDriverZipFileName { get; }
-        Version GetChromeDriverVersion(string chromeDriverPath);
         Version GetChromeVersion();
     }
 }

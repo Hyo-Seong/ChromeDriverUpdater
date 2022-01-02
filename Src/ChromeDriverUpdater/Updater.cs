@@ -35,7 +35,7 @@ namespace ChromeDriverUpdater
 
             update = GetUpdate();
 
-            Version chromeDriverVersion = update.GetChromeDriverVersion(chromeDriverFullPath);
+            Version chromeDriverVersion = GetChromeDriverVersion(chromeDriverFullPath);
             Version chromeVersion = update.GetChromeVersion();
 
             if (UpdateNecessary(chromeDriverVersion, chromeVersion))
@@ -54,7 +54,7 @@ namespace ChromeDriverUpdater
             }
             else if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-
+                return new LinuxUpdater();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
@@ -74,6 +74,18 @@ namespace ChromeDriverUpdater
             return v1.Major == v2.Major &&
                    v1.Minor == v2.Minor &&
                    v1.Build == v2.Build;
+        }
+
+        internal Version GetChromeDriverVersion(string chromeDriverPath)
+        {
+            string output = new ProcessExecuter().Run($"{chromeDriverPath}", "-v");
+
+            // output like this
+            // ChromeDriver 88.0.4324.96 (68dba2d8a0b149a1d3afac56fa74648032bcf46b-refs/branch-heads/4324@{#1784})
+            string versionStr = output.Split(' ')[1];
+            Version version = new Version(versionStr);
+
+            return version;
         }
 
         internal void ShutdownChromeDriver(string chromeDriverFullPath)
@@ -138,7 +150,7 @@ namespace ChromeDriverUpdater
 
         internal string GetNewChromeDriverFromZipFile(string zipFileDownloadPath)
         {
-            string unzipPath = Path.ChangeExtension(zipFileDownloadPath, string.Empty);
+            string unzipPath = Path.Combine(Path.GetDirectoryName(zipFileDownloadPath), Path.GetFileNameWithoutExtension(zipFileDownloadPath));
 
             UnzipFile(zipFileDownloadPath, unzipPath, true);
 
@@ -156,9 +168,9 @@ namespace ChromeDriverUpdater
                 // ignore case
                 if (file.Name.ToLower() == update.ChromeDriverName.ToLower())
                 {
-                    string newPath = Path.GetDirectoryName(chromeDriverUnzipPath) + file.Name;
+                    string newPath = Path.Combine(Path.GetDirectoryName(chromeDriverUnzipPath), file.Name);
                     
-                    File.Copy(file.Name, newPath, true);
+                    File.Copy(file.FullName, newPath, true);
 
                     Directory.Delete(chromeDriverUnzipPath, true);
 
@@ -197,8 +209,9 @@ namespace ChromeDriverUpdater
                     File.Delete(zipPath);
                 }
             }
-            catch
+            catch(Exception exc)
             {
+                Console.WriteLine(unzipPath);
                 throw new UpdateFailException(ErrorCode.CannotUnzipChromeDriverZipFile);
             }
         }
