@@ -40,7 +40,9 @@ namespace ChromeDriverUpdater
 
             if (UpdateNecessary(chromeDriverVersion, chromeVersion))
             {
-                ShutdownChromeDriver(chromeDriverFullPath);
+                if(update is WindowsUpdater){
+                    ShutdownChromeDriver(chromeDriverFullPath);
+                }
 
                 UpdateChromeDriver(chromeDriverFullPath, chromeVersion);
             }
