@@ -3,8 +3,6 @@ name: Test
 on: [push]
 
 env:
-  WIN_PROJECT_PATH: 'Src\ChromeDriverUpdater\ChromeDriverUpdater.csproj'
-  WIN_TEST_PROJECT_PATH: 'Src\ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj'
   PROJECT_PATH: 'Src/ChromeDriverUpdater/ChromeDriverUpdater.csproj'
   TEST_PROJECT_PATH: 'Src/ChromeDriverUpdater.Tests/ChromeDriverUpdater.Tests.csproj'
 
@@ -13,7 +11,8 @@ jobs:
     runs-on: 'windows-latest'
 
     steps:
-      - uses: actions/checkout@v2
+      - name: 'checkout'
+        uses: actions/checkout@v2
 
       - name: 'use dotnet 5.0.x'
         uses: actions/setup-dotnet@v1.7.2
@@ -43,6 +42,7 @@ jobs:
     runs-on: 'ubuntu-latest'
 
     steps:
+      - name: 'checkout'
       - uses: actions/checkout@v2
 
       - name: 'use dotnet 5.0'
