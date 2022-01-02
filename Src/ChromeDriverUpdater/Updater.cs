@@ -210,9 +210,8 @@ namespace ChromeDriverUpdater
                     File.Delete(zipPath);
                 }
             }
-            catch(Exception exc)
+            catch
             {
-                Console.WriteLine(unzipPath);
                 throw new UpdateFailException(ErrorCode.CannotUnzipChromeDriverZipFile);
             }
         }
