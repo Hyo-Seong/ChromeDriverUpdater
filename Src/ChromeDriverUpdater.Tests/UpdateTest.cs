@@ -10,7 +10,7 @@ namespace ChromeDriverUpdater.Tests
         public void ChromeDriverUpdateTest()
         {
             File.Delete("chromedriver.exe");
-            File.Copy("chromedriver_old.exe", "chromedriver.exe");
+            File.Copy("chromedriver_win32.exe", "chromedriver.exe");
 
             Updater updater = new Updater();
             try
