@@ -3,15 +3,16 @@ name: Test
 on: [push]
 
 env:
-  PROJECT_PATH: 'Src\ChromeDriverUpdater\ChromeDriverUpdater.csproj'
-  TEST_PROJECT_PATH: 'Src\ChromeDriverUpdater.Tests\ChromeDriverUpdater.Tests.csproj'
+  PROJECT_PATH: 'Src/ChromeDriverUpdater/ChromeDriverUpdater.csproj'
+  TEST_PROJECT_PATH: 'Src/ChromeDriverUpdater.Tests/ChromeDriverUpdater.Tests.csproj'
 
 jobs:
-  test:
+  windows-latest:
     runs-on: 'windows-latest'
 
     steps:
-      - uses: actions/checkout@v2
+      - name: 'checkout'
+        uses: actions/checkout@v2
 
       - name: 'use dotnet 5.0.x'
         uses: actions/setup-dotnet@v1.7.2
@@ -21,6 +22,9 @@ jobs:
         uses: actions/setup-dotnet@v1.7.2
         with:
           dotnet-version: '6.0.x'
+          
+      - name: 'setup chrome'
+        uses: browser-actions/setup-chrome@latest
 
       - name: 'restore packages'
         run: dotnet restore ${{ env.PROJECT_PATH }}
@@ -32,4 +36,41 @@ jobs:
       - name: 'build test project'
         run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
       - name: 'test project'
-        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal --logger trx
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal
+        
+  ubuntu-latest:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+      - name: 'checkout'
+        uses: actions/checkout@v2
+
+      - name: 'use dotnet 5.0'
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '5.0.x'
+      - name: 'use dotnet 6.0'
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: 'setup chrome'
+        uses: browser-actions/setup-chrome@latest
+
+      - name: 'restore packages'
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+      - name: 'build net5.0'
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release -f net5.0
+      - name: 'build net6.0'
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release -f net6.0
+
+      - name: 'restore test packages'
+        run: dotnet restore ${{ env.TEST_PROJECT_PATH }}
+      - name: 'build test net5.0'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release -f net5.0
+      - name: 'build test net6.0'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release -f net6.0
+      - name: 'test net5.0'
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} -f net5.0 --no-restore --verbosity normal
+      - name: 'test net6.0'
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} -f net6.0 --no-restore --verbosity normal
