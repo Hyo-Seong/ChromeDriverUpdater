@@ -8,29 +8,35 @@ namespace ChromeDriverUpdater.Tests
     [TestFixture]
     public class UpdateTest
     {
+        private const string WIN_TEST_CHROMEDRIVER_NAME = "chromedriver_win32.exe";
+        private const string WIN_CHROMEDRIVER_NAME = "chromedriver.exe";
+        private const string LINUX_TEST_CHROMEDRIVER_NAME = "chromedriver_linux64";
+        private const string LINUX_CHROMEDRIVER_NAME = "chromedriver";
+
+
         [Test]
         public void ChromeDriverUpdateTest()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                if (File.Exists("chromedriver.exe"))
+                if (File.Exists(WIN_CHROMEDRIVER_NAME))
                 {
-                    File.Delete("chromedriver.exe");
+                    File.Delete(WIN_CHROMEDRIVER_NAME);
                 }
 
-                File.Copy("chromedriver_win32.exe", "chromedriver.exe");
+                File.Copy(WIN_TEST_CHROMEDRIVER_NAME, WIN_CHROMEDRIVER_NAME);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                if (File.Exists("chromedriver"))
+                if (File.Exists(LINUX_CHROMEDRIVER_NAME))
                 {
-                    File.Delete("chromedriver");
+                    File.Delete(LINUX_CHROMEDRIVER_NAME);
                 }
 
-                File.Copy("chromedriver_linux64", "chromedriver");
+                File.Copy(LINUX_TEST_CHROMEDRIVER_NAME, LINUX_CHROMEDRIVER_NAME);
 
                 ProcessExecuter p = new ProcessExecuter();
-                p.Run("chmod chromedriver", "-r 755");
+                p.Run($"chmod ./{LINUX_CHROMEDRIVER_NAME}", "-r 755");
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
