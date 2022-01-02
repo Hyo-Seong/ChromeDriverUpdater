@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 
 namespace ChromeDriverUpdater.Tests
@@ -10,13 +11,7 @@ namespace ChromeDriverUpdater.Tests
         [Test]
         public void LinuxTest()
         {
-            if(File.Exists("chromedriver"))
-            {
-                File.Delete("chromedriver");
-            }
 
-            File.Copy("chromedriver_linux64", "chromedriver");
-            
             Updater updater = new Updater();
             try
             {
@@ -35,12 +30,29 @@ namespace ChromeDriverUpdater.Tests
         [Test]
         public void ChromeDriverUpdateTest()
         {
-            if(File.Exists("chromedriver.exe"))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                File.Delete("chromedriver.exe");
+                if (File.Exists("chromedriver.exe"))
+                {
+                    File.Delete("chromedriver.exe");
+                }
+
+                File.Copy("chromedriver_win32.exe", "chromedriver.exe");
             }
-            
-            File.Copy("chromedriver_old.exe", "chromedriver.exe");
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                if (File.Exists("chromedriver"))
+                {
+                    File.Delete("chromedriver");
+                }
+
+                File.Copy("chromedriver_linux64", "chromedriver");
+
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                // tbd
+            }
 
             Updater updater = new Updater();
             try
@@ -70,6 +82,5 @@ namespace ChromeDriverUpdater.Tests
                 Assert.IsTrue(exc.ErrorCode == Models.ErrorCode.ChromeDriverNotFound);
             }
         }
-
     }
 }

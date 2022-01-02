@@ -60,10 +60,9 @@ namespace ChromeDriverUpdater
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-
             }
-
-            return null;
+         
+            throw new UpdateFailException(ErrorCode.UnSupportedOSPlatform);
         }
 
         internal bool UpdateNecessary(Version chromeVersion, Version chromeDriverVersion)
