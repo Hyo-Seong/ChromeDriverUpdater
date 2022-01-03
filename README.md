@@ -19,7 +19,7 @@ Linux|O
 ```csharp
 try
 {
-    Updater.Update(@"c:\path\to\chromedriver.exe");
+    new Updater().Update(@"c:\path\to\chromedriver.exe");
 }
 catch (UpdateFailException exc)
 {
