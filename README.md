@@ -21,7 +21,7 @@ try
 {
     new Updater().Update(@"c:\path\to\chromedriver.exe");
 }
-catch (UpdateFailException exc)
+catch (Exception exc)
 {
     // ...
 }
