@@ -39,7 +39,7 @@ namespace ChromeDriverUpdater.Tests
                 throw new NotImplementedException();
             }
 
-            Updater updater = new Updater();
+            ChromeDriverUpdater updater = new ChromeDriverUpdater();
             
             updater.Update(chromeDriverName);
 
@@ -51,7 +51,7 @@ namespace ChromeDriverUpdater.Tests
         {
             try
             {
-                Updater updater = new Updater();
+                ChromeDriverUpdater updater = new ChromeDriverUpdater();
                 updater.Update("wrong");
             }
             catch(UpdateFailException exc)
