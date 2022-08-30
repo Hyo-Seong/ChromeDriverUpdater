@@ -1,5 +1,4 @@
 ﻿using ChromeDriverUpdater.Models;
-using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace ChromeDriverUpdater
 {
-    public class Updater
+    public class ChromeDriverUpdater
     {
         internal const string CHROME_DRIVER_BASE_URL = "https://chromedriver.storage.googleapis.com";
 
