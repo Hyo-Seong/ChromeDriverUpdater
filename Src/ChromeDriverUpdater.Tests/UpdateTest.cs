@@ -97,7 +97,12 @@ namespace ChromeDriverUpdater.Tests
             try
             {
                 WindowsUpdateHelper updater = new WindowsUpdateHelper();
-                updater.GetChromeVersion();
+                Version v = updater.GetChromeVersion();
+
+                if(v == null)
+                {
+                    throw new Exception();
+                }
             }
             catch
             {
