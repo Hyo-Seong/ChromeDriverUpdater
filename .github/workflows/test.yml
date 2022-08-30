@@ -28,15 +28,21 @@ jobs:
 
       - name: 'restore packages'
         run: dotnet restore ${{ env.PROJECT_PATH }}
-      - name: 'build project'
-        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release
+      - name: 'build net5.0'
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release -f net5.0
+      - name: 'build net6.0'
+        run: dotnet build ${{ env.PROJECT_PATH }} --no-restore --configuration Release -f net6.0
 
       - name: 'restore test packages'
         run: dotnet restore ${{ env.TEST_PROJECT_PATH }}
-      - name: 'build test project'
-        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release
-      - name: 'test project'
-        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --no-restore --verbosity normal
+      - name: 'build test net5.0'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release -f net5.0
+      - name: 'build test net6.0'
+        run: dotnet build ${{ env.TEST_PROJECT_PATH }} --no-restore --configuration Release -f net6.0
+      - name: 'test net5.0'
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} -f net5.0 --no-restore --verbosity normal
+      - name: 'test net6.0'
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} -f net6.0 --no-restore --verbosity normal
         
   ubuntu-latest:
     runs-on: 'ubuntu-latest'
