@@ -1,5 +1,4 @@
-﻿using ChromeDriverUpdater.Models;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 
 namespace ChromeDriverUpdater
@@ -11,26 +10,22 @@ namespace ChromeDriverUpdater
         
         public Version GetChromeVersion()
         {
-            try
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Google\\Chrome\\BLBeacon"))
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software\\Google\\Chrome\\BLBeacon"))
+                if (key != null)
                 {
-                    if (key != null)
+                    object versionObject = key.GetValue("version");
+
+                    if (versionObject != null)
                     {
-                        object versionObject = key.GetValue("version");
+                        Version version = new Version(versionObject as String);
 
-                        if (versionObject != null)
-                        {
-                            Version version = new Version(versionObject as String);
-
-                            return version;
-                        }
+                        return version;
                     }
                 }
             }
-            catch { }
 
-            throw new UpdateFailException(ErrorCode.ChromeNotInstalled);
+            return null;
         }
     }
 }

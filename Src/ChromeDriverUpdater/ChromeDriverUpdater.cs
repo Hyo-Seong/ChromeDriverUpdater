@@ -1,5 +1,4 @@
-﻿using ChromeDriverUpdater.Models;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -34,7 +33,7 @@ namespace ChromeDriverUpdater
 
             if (!File.Exists(chromeDriverFullPath))
             {
-                throw new UpdateFailException(ErrorCode.ChromeDriverNotFound);
+                throw new FileNotFoundException();
             }
 
             updateHelper = GetUpdateHelper();
@@ -66,7 +65,7 @@ namespace ChromeDriverUpdater
             {
             }
          
-            throw new UpdateFailException(ErrorCode.UnSupportedOSPlatform);
+            throw new NotSupportedException();
         }
 
         internal bool UpdateNecessary(Version chromeVersion, Version chromeDriverVersion)
@@ -76,6 +75,15 @@ namespace ChromeDriverUpdater
 
         internal bool CompareVersionMajorToBuild(Version v1, Version v2)
         {
+            if(v1 == null)
+            {
+                throw new ArgumentNullException(nameof(v1));
+            }
+            if(v2 == null)
+            {
+                throw new ArgumentNullException(nameof(v2));
+            }
+
             return v1.Major == v2.Major &&
                    v1.Minor == v2.Minor &&
                    v1.Build == v2.Build;
@@ -102,14 +110,7 @@ namespace ChromeDriverUpdater
                 // find exact path
                 if (process.MainWindowTitle == chromeDriverFullPath)
                 {
-                    try
-                    {
-                        process.Kill();
-                    } 
-                    catch 
-                    { 
-                        throw new UpdateFailException(ErrorCode.CannotShutdownloadChromeDriver); 
-                    }
+                    process.Kill();
                 }
             }
         }
@@ -127,18 +128,11 @@ namespace ChromeDriverUpdater
 
         internal string GetProperChromeDriverVersion(Version chromeVersion)
         {
-            try
-            {
-                string url = $"{CHROME_DRIVER_BASE_URL}/LATEST_RELEASE_{chromeVersion.Major}.{chromeVersion.Minor}.{chromeVersion.Build}";
+            string url = $"{CHROME_DRIVER_BASE_URL}/LATEST_RELEASE_{chromeVersion.Major}.{chromeVersion.Minor}.{chromeVersion.Build}";
 
-                WebClient client = new WebClient();
+            WebClient client = new WebClient();
 
-                return client.DownloadString(url);
-            }
-            catch
-            {
-                throw new UpdateFailException(ErrorCode.CannotGetLatestRelease);
-            }
+            return client.DownloadString(url);
         }
 
         internal string DownloadChromeDriverZipFile(Version chromeVersion)
@@ -183,40 +177,26 @@ namespace ChromeDriverUpdater
                 }
             }
 
-            throw new UpdateFailException(ErrorCode.CannotDownloadNewChromeDriver);
+            throw new Exception("Can't find chromedriver name. name: " + updateHelper.ChromeDriverName.ToLower());
         }
 
         internal void DownloadFile(string downloadUrl, string downloadPath)
         {
-            try
-            {
-                new WebClient().DownloadFile(downloadUrl, downloadPath);
-            }
-            catch
-            {
-                throw new UpdateFailException(ErrorCode.CannotDownloadNewChromeDriver);
-            }
+            new WebClient().DownloadFile(downloadUrl, downloadPath);
         }
 
         internal void UnzipFile(string zipPath, string unzipPath, bool deleteZipFile = true)
         {
-            try
+            if (Directory.Exists(unzipPath))
             {
-                if (Directory.Exists(unzipPath))
-                {
-                    Directory.Delete(unzipPath, true);
-                }
-
-                ZipFile.ExtractToDirectory(zipPath, unzipPath);
-
-                if(deleteZipFile)
-                {
-                    File.Delete(zipPath);
-                }
+                Directory.Delete(unzipPath, true);
             }
-            catch
+
+            ZipFile.ExtractToDirectory(zipPath, unzipPath);
+
+            if(deleteZipFile)
             {
-                throw new UpdateFailException(ErrorCode.CannotUnzipChromeDriverZipFile);
+                File.Delete(zipPath);
             }
         }
     }
