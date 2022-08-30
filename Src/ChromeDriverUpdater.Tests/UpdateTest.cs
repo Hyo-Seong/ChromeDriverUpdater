@@ -47,16 +47,38 @@ namespace ChromeDriverUpdater.Tests
         }
 
         [Test]
-        public void WrongChromeDriverPathTest()
+        public void WrongChromeDriverPathTest1()
         {
             try
             {
                 ChromeDriverUpdater updater = new ChromeDriverUpdater();
                 updater.Update("wrong");
             }
-            catch(UpdateFailException exc)
+            catch(FileNotFoundException)
             {
-                Assert.IsTrue(exc.ErrorCode == Models.ErrorCode.ChromeDriverNotFound);
+                Assert.True(true);
+            }
+            catch(Exception)
+            {
+                Assert.True(false);
+            }
+        }
+
+        [Test]
+        public void WrongChromeDriverPathTest2()
+        {
+            try
+            {
+                ChromeDriverUpdater updater = new ChromeDriverUpdater();
+                updater.Update(null);
+            }
+            catch (ArgumentNullException)
+            {
+                Assert.True(true);
+            }
+            catch (Exception)
+            {
+                Assert.True(false);
             }
         }
 
