@@ -24,6 +24,11 @@ namespace ChromeDriverUpdater
         /// <exception cref="UpdateFailException"></exception>
         public void Update(string chromeDriverFullPath)
         {
+            if(string.IsNullOrEmpty(chromeDriverFullPath))
+            {
+                throw new ArgumentNullException(nameof(chromeDriverFullPath));
+            }
+
             // change to full path to shutdown chromedriver
             chromeDriverFullPath = Path.GetFullPath(chromeDriverFullPath);
 
